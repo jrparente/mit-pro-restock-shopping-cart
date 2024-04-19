@@ -1,4 +1,4 @@
-const { Card, Accordion, Button, Container, Row, Col, Image, Input } =
+const { Card, ListGroup, Button, Container, Row, Col, Image, Input } =
   ReactBootstrap;
 
 // simulate getting products from DataBase
@@ -110,7 +110,7 @@ const ProductCard = ({ item, index, addToCart }) => {
   ];
 
   return (
-    <Col key={index} xs={12} sm={6} md={3} className="mb-3 mb-md-0">
+    <Col key={index} xs={12} sm={6} md={3} className="mb-3 mb-md-0 p-0 pr-1">
       <Card>
         <Card.Img src={photos[index % 4]} variant="top"></Card.Img>
         <Card.Body>
@@ -135,20 +135,22 @@ const ProductCard = ({ item, index, addToCart }) => {
 
 const CardItem = ({ item, index, deleteCartItem }) => {
   return (
-    <Row key={1 + index} className="align-items-center">
-      <Col sm={8}>
-        1 x {item.attributes.name} from {item.attributes.country}
-      </Col>
+    <ListGroup.Item key={1 + index}>
+      <Row className="align-items-center">
+        <Col sm={8}>
+          1 x {item.attributes.name} from {item.attributes.country}
+        </Col>
 
-      <Col className="text-right">$ {item.attributes.cost}</Col>
+        <Col className="text-right">$ {item.attributes.cost}</Col>
 
-      <Col
-        onClick={() => deleteCartItem(index)}
-        className="btn btn-link text-right"
-      >
-        Delete
-      </Col>
-    </Row>
+        <Col
+          onClick={() => deleteCartItem(index)}
+          className="btn btn-link text-right"
+        >
+          Delete
+        </Col>
+      </Row>
+    </ListGroup.Item>
   );
 };
 
@@ -260,7 +262,6 @@ const Store = () => {
   // Clear cart + restock products
   const checkOut = () => {
     setCart([]);
-    restockProducts(query);
   };
 
   // Restock products
@@ -276,23 +277,33 @@ const Store = () => {
 
   return (
     <Container>
-      <Row className="mb-5">
-        <h3>Product List</h3>
+      <Col className="mb-5">
+        <Row className="justify-content-between mb-3">
+          <h3>Product List</h3>
+          <Button onClick={() => restockProducts(query)}>
+            Restock Products
+          </Button>
+        </Row>
         <Row>{productList}</Row>
-      </Row>
+      </Col>
 
-      <Row className="d-flex flex-column mb-5">
-        <h3>Cart Contents</h3>
-        <Col>{cartList}</Col>
-        <p className="font-weight-bold text-uppercase text-right">
-          Total: $ {finalList().total}
-        </p>
+      <Col className="d-flex flex-column mb-5">
+        <Row>
+          <h3>Shopping Cart</h3>
+        </Row>
+
+        <ListGroup>{cartList}</ListGroup>
+        <Row className="justify-content-end mb-3 mt-3">
+          <div className="btn font-weight-bold text-uppercase">
+            Total: $ {finalList().total}
+          </div>
+        </Row>
         <Row className="justify-content-end" style={{ gap: "1rem" }}>
           <Button disabled={finalList().total === 0} onClick={checkOut}>
             CheckOut
           </Button>
         </Row>
-      </Row>
+      </Col>
     </Container>
   );
 };

@@ -25,10 +25,12 @@ This is a simple shopping cart application built with React. It allows users to 
 This was developed from a starter code provided from the MIT xPRO Professional Certificate in Coding: Full Stack Development with MERN course, and I have implemented the following improvements:
 
 - Content is either fetched fom a Strapi API or hardcoded in the application. The app checks if the API is available and fetches the data from it, otherwise it uses the hardcoded data.
-- Improved the UX/UI of the entire application, by adding product cards, simplifying the shopping cart layout, adding a Remove button to each item in the cart, removing the restock button and adding the restock functionality to the "Check Out" button.
+- Improved the UX/UI of the entire application, by adding product cards and simplifying the shopping cart layout.
+- Added a Remove button to each item in the cart.
+- Added the Restock Products button to the Product list section.
+- Fixed the checkout button to reset the cart to an empty array after the user checks out.
 - Added the add and remove stock functionalities to the Add to card button and the Remove button, respectively.
 - Added an alert message when the user tries to add more items to the cart than the available stock.
-- Added the restock functionality to the "Check Out" button, which resets the stock of all items to the original values.
 - Fixed the checkOut function to reset the cart to an empty array after the user checks out.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
