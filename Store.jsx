@@ -159,6 +159,7 @@ const Store = () => {
   const [items, setItems] = React.useState(products);
   const [cart, setCart] = React.useState([]);
   const query = "http://localhost:1337/api/products";
+  const [status, setStatus] = React.useState(null);
 
   const [{ data, isLoading, isError }, doFetch] = useDataApi(query, {
     data: [],
@@ -273,6 +274,11 @@ const Store = () => {
     } else {
       setItems(products);
     }
+    setStatus("Products Restocked!");
+
+    setTimeout(() => {
+      setStatus(null);
+    }, 3000);
   };
 
   return (
@@ -284,6 +290,7 @@ const Store = () => {
             Restock Products
           </Button>
         </Row>
+        {status && <div className="alert alert-info">{status}</div>}
         <Row>{productList}</Row>
       </Col>
 
