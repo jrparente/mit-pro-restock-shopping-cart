@@ -101,13 +101,63 @@ const dataFetchReducer = (state, action) => {
   }
 };
 
+const ProductCard = ({ item, index, addToCart }) => {
+  const photos = [
+    "images/apple.png",
+    "images/orange.png",
+    "images/beans.png",
+    "images/cabbage.png",
+  ];
+
+  return (
+    <Col key={index} xs={12} sm={6} md={3} className="mb-3 mb-md-0">
+      <Card>
+        <Card.Img src={photos[index % 4]} variant="top"></Card.Img>
+        <Card.Body>
+          <Card.Title>{item.attributes.name}</Card.Title>
+          <Card.Text>${item.attributes.cost}/each</Card.Text>
+        </Card.Body>
+        <Card.Footer className="text-muted">
+          <small>Only {item.attributes.in_stock} in stock!</small>
+        </Card.Footer>
+        <button
+          name={item.attributes.name}
+          type="submit"
+          onClick={addToCart}
+          className="btn btn-primary"
+        >
+          Add to Cart
+        </button>
+      </Card>
+    </Col>
+  );
+};
+
+const CardItem = ({ item, index, deleteCartItem }) => {
+  return (
+    <Row key={1 + index} className="align-items-center">
+      <Col sm={8}>
+        1 x {item.attributes.name} from {item.attributes.country}
+      </Col>
+
+      <Col className="text-right">$ {item.attributes.cost}</Col>
+
+      <Col
+        onClick={() => deleteCartItem(index)}
+        className="btn btn-link text-right"
+      >
+        Delete
+      </Col>
+    </Row>
+  );
+};
+
 // Main Products component
 const Store = () => {
   const [items, setItems] = React.useState(products);
   const [cart, setCart] = React.useState([]);
-  const [query, setQuery] = React.useState(
-    "http://localhost:1337/api/products"
-  );
+  const query = "http://localhost:1337/api/products";
+
   const [{ data, isLoading, isError }, doFetch] = useDataApi(query, {
     data: [],
   });
@@ -173,54 +223,25 @@ const Store = () => {
     }
   };
 
-  const photos = [
-    "images/apple.png",
-    "images/orange.png",
-    "images/beans.png",
-    "images/cabbage.png",
-  ];
-
-  let list = items.map((item, index) => {
+  let productList = items.map((item, index) => {
     return (
-      <Col key={index} xs={12} sm={6} md={3} className="mb-3 mb-md-0">
-        <Card>
-          <Card.Img src={photos[index % 4]} variant="top"></Card.Img>
-          <Card.Body>
-            <Card.Title>{item.attributes.name}</Card.Title>
-            <Card.Text>${item.attributes.cost}/each</Card.Text>
-          </Card.Body>
-          <Card.Footer className="text-muted">
-            <small>Only {item.attributes.in_stock} in stock!</small>
-          </Card.Footer>
-          <button
-            name={item.attributes.name}
-            type="submit"
-            onClick={addToCart}
-            className="btn btn-primary"
-          >
-            Add to Cart
-          </button>
-        </Card>
-      </Col>
+      <ProductCard
+        key={index}
+        item={item}
+        index={index}
+        addToCart={addToCart}
+      />
     );
   });
 
   let cartList = cart.map((item, index) => {
     return (
-      <Row key={1 + index} className="align-items-center">
-        <Col sm={8}>
-          1 x {item.attributes.name} from {item.attributes.country}
-        </Col>
-
-        <Col className="text-right">$ {item.attributes.cost}</Col>
-
-        <Col
-          onClick={() => deleteCartItem(index)}
-          className="btn btn-link text-right"
-        >
-          Delete
-        </Col>
-      </Row>
+      <CardItem
+        key={index}
+        item={item}
+        index={index}
+        deleteCartItem={deleteCartItem}
+      />
     );
   });
 
@@ -242,24 +263,22 @@ const Store = () => {
     restockProducts(query);
   };
 
-  // TODO: implement the restockProducts function
-  //   Here’s how the reset stock feature works:
-  // There’s an input field on the page that contains the URL to the Strapi back end
-  // When a user clicks the “ReStock Products” button, a call is made to the Strapi back end specified in the input field
-  // The result of this call is an updated list of products
-  //   Hints:
-  // Make use of the “doFetch” function to make a call to the API
-  // Make use of “setItems” to update the existing items
+  // Restock products
   const restockProducts = (url) => {
     console.log(`Restocking Products ${url}`);
     doFetch(url);
+    if (data.data.length > 0) {
+      setItems(data.data);
+    } else {
+      setItems(products);
+    }
   };
 
   return (
     <Container>
       <Row className="mb-5">
         <h3>Product List</h3>
-        <Row>{list}</Row>
+        <Row>{productList}</Row>
       </Row>
 
       <Row className="d-flex flex-column mb-5">
@@ -269,9 +288,10 @@ const Store = () => {
           Total: $ {finalList().total}
         </p>
         <Row className="justify-content-end" style={{ gap: "1rem" }}>
-          <Button onClick={checkOut}>CheckOut</Button>
+          <Button disabled={finalList().total === 0} onClick={checkOut}>
+            CheckOut
+          </Button>
         </Row>
-        <div> {finalList().total > 0 && finalList().final} </div>
       </Row>
     </Container>
   );
